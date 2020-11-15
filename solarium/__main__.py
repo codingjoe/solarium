@@ -24,7 +24,7 @@ logger = logging.getLogger(__package__)
 @click.option(
     "--host", "-h", default="localhost", help="PiGPIO host, default: localhost"
 )
-@click.option("--warm", default=19, help="Warm LED GPIO pin, default: 19")
+@click.option("--warm", default=12, help="Warm LED GPIO pin, default: 12")
 @click.option("--cold", default=13, help="Warm LED GPIO pin, default: 13")
 @click.option(
     "--verbosity", "-v", default=0, count=True, help="Increase output verbosity."
