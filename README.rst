@@ -47,3 +47,19 @@ If you have pigpiod's remote access enabled, you can also lauch the script from 
 local machine and specify the correct host::
 
     solarium --host=10.0.0.1 -- 52 13
+
+
+Sound support
+-------------
+
+If you want to play a background sound using the ``--sound`` option,
+you will need to install `ffplay`_::
+
+    sudo apt install ffmpeg -y
+
+.. _ffplay: https://ffmpeg.org/ffplay.html
+
+Should you be using an Inter-IC Sound (I2S) board, make sure to run pigpiod's clock
+in PMW mode, to ensure PCM is available for audio::
+
+    sudo pygpiod -t 0

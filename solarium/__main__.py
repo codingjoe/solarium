@@ -26,13 +26,14 @@ logger = logging.getLogger(__package__)
 )
 @click.option("--warm", default=12, help="Warm LED GPIO pin, default: 12")
 @click.option("--cold", default=13, help="Warm LED GPIO pin, default: 13")
+@click.option("--sound", help="Path to sound that will be looped during the day.")
 @click.option(
     "--verbosity", "-v", default=0, count=True, help="Increase output verbosity."
 )
-def main(latitude, longitude, clouds, host, warm, cold, verbosity):
+def main(latitude, longitude, clouds, host, warm, cold, sound, verbosity):
     setup_logging(verbosity)
     leds = led.init(host, warm, cold)
-    asyncio.run(update_color(latitude, longitude, leds, clouds))
+    asyncio.run(update_color(latitude, longitude, leds, clouds, sound))
 
 
 def get_logging_level(verbosity):
