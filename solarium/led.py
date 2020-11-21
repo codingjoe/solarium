@@ -24,7 +24,7 @@ class PWMLED(gpiozero.PWMLED):
             i += interval
 
 
-def init(host="localhost", warm_pin=12, cold_pin=13, frequency=400):
+def init(host="localhost", warm_pin=12, cold_pin=13, frequency=220):
     logger.debug("warm LED: %s:%d@%dHz", host, warm_pin, frequency)
     logger.debug("cold LED: %s:%d@%dHz", host, cold_pin, frequency)
     factory = PiGPIOFactory(host=host)
