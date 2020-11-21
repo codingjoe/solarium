@@ -18,8 +18,8 @@ logger = logging.getLogger(__package__)
 @click.option(
     "--clouds",
     "-c",
-    default=0.2,
-    help="Cache of clouds between. Between 0 and 1, default 0.2.",
+    default=0.1,
+    help="Cache of clouds between. Between 0 and 1, default 0.1.",
 )
 @click.option(
     "--host", "-h", default="localhost", help="PiGPIO host, default: localhost"
