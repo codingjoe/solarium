@@ -4,6 +4,8 @@ import sys
 
 import click
 
+from solarium.player import Player
+
 from . import led
 from .utils import update_color
 
@@ -32,8 +34,11 @@ logger = logging.getLogger(__package__)
 )
 def main(latitude, longitude, clouds, host, warm, cold, sound, verbosity):
     setup_logging(verbosity)
-    leds = led.init(host, warm, cold)
-    asyncio.run(update_color(latitude, longitude, leds, clouds, sound))
+    warm, cold, power_state = led.init(host, warm, cold)
+    player = Player(sound, power_state)
+    asyncio.run(
+        update_color(latitude, longitude, (warm, cold), power_state, clouds, player)
+    )
 
 
 def get_logging_level(verbosity):
