@@ -11,7 +11,12 @@ class PWMLED(gpiozero.PWMLED):
     def __init__(self, *args, **kwargs):
         self.name = kwargs.pop("name")
         self.power_state = kwargs.pop("power_state")
+        self.power_state.callbacks.append(self.turn_off)
         super().__init__(*args, **kwargs)
+
+    def turn_off(self, value):
+        if not value:
+            self.value = int(value)
 
     async def fade(self, value, transition=3, interval=0.05):
         logger.debug("%s: power %s", self.name, self.power_state)
@@ -27,12 +32,17 @@ class PWMLED(gpiozero.PWMLED):
             i += interval
 
 
-class PowerToggle:
-    def __init__(self):
+class PowerToggleMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.power = 1
+        self.callbacks = []
 
-    def __call__(self):
+    def toggle(self):
+        logger.info("Toggle: %i -> %i", self.power, not self.power)
         self.power ^= 1
+        for func in self.callbacks:
+            func(self)
 
     def __bool__(self):
         return bool(self.power)
@@ -46,18 +56,26 @@ class PowerToggle:
     def __rmul__(self, other):
         return other * int(self)
 
+    async def listen(self):
+        while True:
+            self.value
+            await asyncio.sleep(1)
+
+
+class PowerToggle(PowerToggleMixin, gpiozero.Button):
+    pass
+
 
 def init(host="localhost", warm_pin=12, cold_pin=13, power_pin=17, frequency=220):
     logger.debug("warm LED: %s:%d@%dHz", host, warm_pin, frequency)
     logger.debug("cold LED: %s:%d@%dHz", host, cold_pin, frequency)
     factory = PiGPIOFactory(host=host)
 
-    power_button = gpiozero.Button(power_pin, pin_factory=factory)
-    power_state = PowerToggle()
-    power_button.when_pressed = power_state
-    warm = PWMLED(warm_pin, name="warm", power_state=power_state, pin_factory=factory)
-    cold = PWMLED(cold_pin, name="cold", power_state=power_state, pin_factory=factory)
+    power_button = PowerToggle(power_pin, pin_factory=factory)
+    power_button.when_pressed = lambda: power_button.toggle()
+    warm = PWMLED(warm_pin, name="warm", power_state=power_button, pin_factory=factory)
+    cold = PWMLED(cold_pin, name="cold", power_state=power_button, pin_factory=factory)
     warm.frequency = frequency
     cold.frequency = frequency
 
-    return warm, cold
+    return warm, cold, power_button
