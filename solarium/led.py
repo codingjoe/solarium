@@ -18,6 +18,10 @@ class PWMLED(gpiozero.PWMLED):
         if not value:
             self.value = int(value)
 
+    @gpiozero.PWMLED.value.setter
+    def value(self, value):
+        gpiozero.PWMLED.value.fset(self, value * self.power_state)
+
     async def fade(self, value, transition=3, interval=0.05):
         logger.debug("%s: power %s", self.name, self.power_state)
         logger.debug("%s: %s -> %s (%ss)", self.name, self.value, value, transition)
