@@ -70,7 +70,7 @@ class PowerToggle(PowerToggleMixin, gpiozero.Button):
     pass
 
 
-def init(host="localhost", warm_pin=12, cold_pin=13, power_pin=17, frequency=220):
+def init(host="localhost", warm_pin=12, cold_pin=13, power_pin=17, frequency=100):
     logger.debug("warm LED: %s:%d@%dHz", host, warm_pin, frequency)
     logger.debug("cold LED: %s:%d@%dHz", host, cold_pin, frequency)
     factory = PiGPIOFactory(host=host)
