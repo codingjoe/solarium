@@ -37,14 +37,16 @@ class PWMLED(gpiozero.PWMLED):
 
 
 class PowerToggleMixin:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, power_led=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.power = 1
+        self.power_led = power_led
         self.callbacks = []
 
     def toggle(self):
         logger.info("Toggle: %i -> %i", self.power, not self.power)
         self.power ^= 1
+        self.power_led.value = not self.power
         for func in self.callbacks:
             func(self)
 
@@ -70,12 +72,20 @@ class PowerToggle(PowerToggleMixin, gpiozero.Button):
     pass
 
 
-def init(host="localhost", warm_pin=12, cold_pin=13, power_pin=17, frequency=100):
+def init(
+    host="localhost",
+    warm_pin=12,
+    cold_pin=13,
+    power_pin=17,
+    power_led_pin=26,
+    frequency=100,
+):
     logger.debug("warm LED: %s:%d@%dHz", host, warm_pin, frequency)
     logger.debug("cold LED: %s:%d@%dHz", host, cold_pin, frequency)
     factory = PiGPIOFactory(host=host)
 
-    power_button = PowerToggle(power_pin, pin_factory=factory)
+    power_led = gpiozero.LED(power_led_pin, pin_factory=factory)
+    power_button = PowerToggle(power_pin, pin_factory=factory, power_led=power_led)
     power_button.when_pressed = lambda: power_button.toggle()
     warm = PWMLED(warm_pin, name="warm", power_state=power_button, pin_factory=factory)
     cold = PWMLED(cold_pin, name="cold", power_state=power_button, pin_factory=factory)
