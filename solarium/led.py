@@ -85,7 +85,9 @@ def init(
     factory = PiGPIOFactory(host=host)
 
     power_led = gpiozero.LED(power_led_pin, pin_factory=factory)
-    power_button = PowerToggle(power_pin, pin_factory=factory, power_led=power_led)
+    power_button = PowerToggle(
+        power_pin, pin_factory=factory, power_led=power_led, bounce_time=1
+    )
     power_button.when_pressed = lambda: power_button.toggle()
     warm = PWMLED(warm_pin, name="warm", power_state=power_button, pin_factory=factory)
     cold = PWMLED(cold_pin, name="cold", power_state=power_button, pin_factory=factory)
