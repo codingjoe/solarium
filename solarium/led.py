@@ -77,7 +77,7 @@ def init(
     warm_pin=12,
     cold_pin=13,
     power_pin=17,
-    power_led_pin=25,
+    power_led_pin=26,
     frequency=100,
 ):
     logger.debug("warm LED: %s:%d@%dHz", host, warm_pin, frequency)
